@@ -27,7 +27,8 @@ class HtmlEditor extends StatefulWidget {
   final String widthImage;
   final bool showBottomToolbar;
   final String hint;
-
+  final Function(String) returnContent;
+  
   HtmlEditor(
       {Key key,
       this.value,
@@ -36,7 +37,7 @@ class HtmlEditor extends StatefulWidget {
       this.useBottomSheet = true,
       this.widthImage = "100%",
       this.showBottomToolbar = true,
-      this.hint})
+      this.hint, this.returnContent})
       : super(key: key);
 
   @override
@@ -206,12 +207,15 @@ class HtmlEditorState extends State<HtmlEditor> {
           setState(() {
             text = isi;
           });
+          if(widget.returnContent != null) {
+            widget.returnContent(text);
+          }
         });
   }
 
   Future<String> getText() async {
-    await _controller.evaluateJavascript(
-        "GetTextSummernote.postMessage(document.getElementsByClassName('note-editable')[0].innerHTML);");
+    String content = await _controller.evaluateJavascript(
+        "setTimeout(function(){GetTextSummernote.postMessage(document.getElementsByClassName('note-editable')[0].innerHTML)}, 0);");    
     return text;
   }
 
